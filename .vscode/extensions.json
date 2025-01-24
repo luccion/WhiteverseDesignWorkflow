@@ -1,3 +1,10 @@
 {
-  "recommendations": ["shd101wyy.markdown-preview-enhanced", "janisdd.vscode-edit-csv", "esbenp.prettier-vscode"]
+  "recommendations": [
+    "shd101wyy.markdown-preview-enhanced",
+    "janisdd.vscode-edit-csv",
+    "esbenp.prettier-vscode",
+    "mechatroner.rainbow-csv",
+    "davidanson.vscode-markdownlint",
+    "naumovs.color-highlight"
+  ]
 }
