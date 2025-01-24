@@ -1,6 +1,8 @@
 # Whiteverse 团队工作流
 
-我们在此总结 Whiteverse 项目的设计工作流与标准，除此之外，我们还会在此记录一些项目中的设计经验和技巧，以便于团队成员更好地理解项目的设计规范。
+我们在此总结 Whiteverse 项目的技术栈需求以及标准化工作流建议。
+除此之外，我们还会在此记录一些项目中的设计经验和技巧，以便于团队成员更好地理解项目的设计规范。
+请按需阅读本文档，以便更好地理解我们的工作流程。
 
 ## **基础技术栈**
 
@@ -208,19 +210,82 @@ _P.S. 请不要使用 NotePad++、Typora 等不同规范的编辑器。_
 - **唯一性**：保证 `PSD` 文件的唯一性，借助 `Git` 进行管理，不可出现以日期命名或者无意义命名的文件。
 - **导出**：无需导出 `PNG` 文件，应只提交 `PSD` 文件。
 
-###
+### **Spine**
+
+为保证导入时的便捷性，在导入图片到 Spine 时，不应裁切图片，而是保持画布大小，以便于在 Spine 中进行统一调整。
 
 ---
 
 ## 程序工作流
 
+```mermaid
+graph TD
+    A[需求分析] --> B[系统设计]
+    B --> C[场景与预制体搭建]
+    C --> D[编写脚本]
+    D --> E[功能实现]
+    E --> F[物理与动画集成]
+    F --> G[单元测试]
+    G --> H[集成测试]
+    H --> I[性能优化]
+    I --> J[构建与打包]
+    J --> K[发布与维护]
+
+    %% 反馈循环
+    G -->|发现问题| D
+    H -->|发现问题| D
+    I -->|优化需求| D
+    K -->|玩家反馈| A
+
+    subgraph 前期准备
+        A --> B
+    end
+
+    subgraph 开发阶段
+        C --> D
+        D --> E
+        E --> F
+    end
+
+    subgraph 测试与优化
+        G --> H
+        H --> I
+    end
+
+    subgraph 发布阶段
+        J --> K
+    end
+```
+
 ## 策划工作流
 
-### 测试
+```mermaid
+graph TD
+  Start[开始策划工作] --> Design[撰写设计文档]
+  Design --> DesignReview{设计文档评审}
+    DesignReview --> |通过| Data[填写数据表]
+    DesignReview --> |不通过| Design
+
+  Data --> DataReview{数据表评审}
+    DataReview --> |通过| Export[导出数据表]
+    DataReview --> |不通过| Data
+
+  Export --> Package[将数据提交为Package]
+  Package --> Implementation[实现功能]
+
+  Implementation --> Test[测试功能]
+  Test --> Issue{是否有问题?}
+    Issue --> |是| Change[提交需求变更及Issue]
+    Issue --> |否| Done[完成]
+
+  Change --> DesignReview
+
+  %% 样式定义
+  classDef Implementation fill:#eee,stroke:#eee;
+  class Implementation Implementation;
+```
 
 ## 翻译工作流
-
-本章节以物品为例讨论游戏翻译工作流。
 
 ```mermaid
 graph TD
@@ -239,13 +304,9 @@ graph TD
     Type -->|第三方翻译| G[编写JSON翻译文件]
     G --> H[以Mod方式加载]
     H --> End
-
-    %% 样式
-    classDef process fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef decision fill:#bbf,stroke:#333,stroke-width:2px;
-    class Type decision;
-    class A,B,C,D,E,F,G,H process;
 ```
+
+本章节以物品为例讨论游戏翻译工作流。
 
 ### 第一方人工翻译
 
@@ -275,6 +336,34 @@ graph TD
 在翻译完成后，将以类似 `Mod` 的方式进行动态加载。
 
 ## 美术工作流
+
+```mermaid
+graph TD
+  Start[美术工作启动] --> Concept[概念设计]
+  Concept --> ConceptReview{概念评审}
+    ConceptReview --> |通过| Artwork[美术设计]
+    ConceptReview --> |不通过| Concept
+
+  Artwork --> Aseprite[Aseprite]
+  Artwork --> Photoshop[Photoshop]
+  Artwork --> CSP[CSP]
+  Artwork --> Others[...]
+  Aseprite --> PSD
+  Photoshop --> PSD
+  CSP --> PSD
+  Others --> PSD
+  PSD[.psd文件] -->  ArtReview{美术资源评审}
+    ArtReview --> |通过| Export[导出资源PNG]
+    ArtReview --> |不通过| Artwork
+  Export--> UnityImport[导入Unity]
+  UnityImport --> SceneAssembly[拼装/引用]
+  SceneAssembly --> Test[测试]
+  Test --> Issue{是否有问题?}
+    Issue --> |是| Feedback[提交反馈]
+    Issue --> |否| Done[完成]
+
+  Feedback --> Artwork
+```
 
 我们建议使用 Photoshop 进行绘图，并使用.psd 文件进行保存、转移和交接。
 使用 Photoshop 进行绘图时，伴随软件特性产生的一些问题，需要特别注意。以下是一些常见的问题和解决方案：
@@ -535,11 +624,11 @@ height' =  height * 3/4
 - 命名时，应当注意保留名称字段。
   以下是一些常用的字段和意义：
 
-  | 字段 | 含义 |
-  | | -- |
+  | 字段            | 含义                                            |
+  | --------------- | ----------------------------------------------- |
   | Shadow(#Shadow) | 投影，在 MapRenderer 预处理过程中将不会进行描边 |
-  | #tex | 材质纹理，用于保护原有结构色彩 |
-  | #Light | 灯光物体，仅用于保存 Light 2D 灯光效果 |
+  | #tex            | 材质纹理，用于保护原有结构色彩                  |
+  | #Light          | 灯光物体，仅用于保存 Light 2D 灯光效果          |
 
 - 导入图片时，由于图片大小的不确定性和重复修改性，不建议保存为 SpriteSheet，而是直接导入单张图片，以便于后续的修改。
 
