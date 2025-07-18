@@ -5,6 +5,13 @@
     "esbenp.prettier-vscode",
     "mechatroner.rainbow-csv",
     "davidanson.vscode-markdownlint",
-    "naumovs.color-highlight"
+    "naumovs.color-highlight",
+    "grapecity.gc-excelviewer",
+    "kisstkondoros.vscode-gutter-preview",
+    "yzhang.markdown-all-in-one",
+    "yzane.markdown-pdf",
+    "bierner.markdown-mermaid",
+    "pkief.material-icon-theme",
+    "secretlab.yarn-spinner"
   ]
 }
