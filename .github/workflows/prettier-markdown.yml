@@ -1,0 +1,43 @@
+name: Prettier Markdown
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - "**/*.md"
+
+jobs:
+  format-markdown:
+    if: "!contains(github.event.head_commit.message, '[skip ci]') && github.actor != 'github-actions[bot]'"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run Prettier on Markdown
+        run: npx --yes prettier@3.3.3 "**/*.md" --write
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add **/*.md
+          if ! git diff --staged --quiet; then
+            git commit -m "Prettier: format markdown [skip ci]"
+          fi
+
+      - name: Push changes
+        if: success()
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref_name }}
